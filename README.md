@@ -1,3 +1,5 @@
+
+
 <div align="center">
 
 <img src="https://capsule-render.vercel.app/api?type=venom&color=0:0f2027,50:203a43,100:6DB33F&height=230&section=header&text=Pawan%20Bulathwaththa&fontSize=52&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Full-Stack%20%C2%B7%20Enterprise%20Java%20%C2%B7%20Cloud-Native%20%C2%B7%20AI-Curious&descAlignY=60&descSize=17" width="100%"/>
@@ -8,7 +10,6 @@
 
 <br/>
 
-![Profile Views](https://komarev.com/ghpvc/?username=pawanbulathwaththa&label=VISITORS&color=6DB33F&style=for-the-badge)
 [![Portfolio](https://img.shields.io/badge/Portfolio-Visit-203a43?style=for-the-badge&logo=githubpages&logoColor=white)](https://pawanbulathwaththa.github.io/my_portfolio)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/pawan-bulathwaththa-99a51733b)
 [![Gmail](https://img.shields.io/badge/Email-Say%20Hi-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:pawanbulatwaththa@gmail.com)
@@ -335,6 +336,129 @@ Running 7 tests using 1 worker
 - ✍️ **Editor**, Rotaract Club of NIBM Kandy (2024 – 2025)
 - 💻 **Active Member**, IT Society of NIBM Kandy (2023 – 2025)
 - 🎨 Comfortable in Figma and UI/UX design, so I can sit between design and engineering
+
+---
+
+## 🕹️ `Mini Game: Bug Hunt, Production Edition`
+
+> You're the on-call engineer. 3 incidents. 3 bugs. Pick your answer in your head, then click to reveal. Keep score!
+
+<details>
+<summary><b>🚨 Incident #1: "The API returns 500 for a user that doesn't exist" (☕ Spring Boot)</b></summary>
+
+<br/>
+
+```java
+@GetMapping("/users/{id}")
+public User getUser(@PathVariable Long id) {
+    return userRepository.findById(id).get();
+}
+```
+
+**What's the root cause?**
+
+- **A)** The `@PathVariable` is missing a name
+- **B)** `Optional.get()` throws when the value is empty
+- **C)** `Long` can't be used as an ID type
+
+<details>
+<summary>🔍 <b>Reveal answer</b></summary>
+
+<br/>
+
+✅ **B.** An empty `Optional` throws `NoSuchElementException`, which bubbles up as a **500** instead of a clean **404**. Fix it:
+
+```java
+return userRepository.findById(id)
+    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+```
+
+</details>
+</details>
+
+<details>
+<summary><b>🚨 Incident #2: "The browser tab freezes and the API is getting hammered" (⚛️ Next.js)</b></summary>
+
+<br/>
+
+```tsx
+useEffect(() => {
+  fetch("/api/cards")
+    .then((res) => res.json())
+    .then(setCards);
+});
+```
+
+**What's the root cause?**
+
+- **A)** `fetch` can't be used inside `useEffect`
+- **B)** The API is returning too much data
+- **C)** The effect has no dependency array, so it re-runs after every render
+
+<details>
+<summary>🔍 <b>Reveal answer</b></summary>
+
+<br/>
+
+✅ **C.** `setCards` triggers a re-render, which runs the effect again, which fetches again... an infinite loop. Fix it:
+
+```tsx
+useEffect(() => {
+  fetch("/api/cards").then((res) => res.json()).then(setCards);
+}, []); // run once on mount
+```
+
+</details>
+</details>
+
+<details>
+<summary><b>🚨 Incident #3: "Traefik says 502 Bad Gateway but the container is healthy" (🐳 DevOps)</b></summary>
+
+<br/>
+
+```yaml
+# application.yml inside the Docker container
+server:
+  port: 8080
+  address: 127.0.0.1
+```
+
+**What's the root cause?**
+
+- **A)** The app only listens on the container's own loopback, so Traefik can't reach it
+- **B)** Cloudflare is blocking the request
+- **C)** HSTS is too strict
+
+<details>
+<summary>🔍 <b>Reveal answer</b></summary>
+
+<br/>
+
+✅ **A.** Bound to `127.0.0.1`, the service is invisible to other containers on the Docker network. Bind to all interfaces instead:
+
+```yaml
+server:
+  address: 0.0.0.0
+```
+
+</details>
+</details>
+
+<details>
+<summary><b>🏆 How did you score?</b></summary>
+
+<br/>
+
+| Score | Rank |
+|:---:|---|
+| 3 / 3 | 🧙 **Principal Bug Slayer.** Come work with me. |
+| 2 / 3 | ⚔️ **Senior Debugger.** Solid instincts. |
+| 1 / 3 | 🛡️ **Rising Engineer.** Everyone starts somewhere. |
+| 0 / 3 | 🐛 **The Bug Itself.** Read the answers and try again! |
+
+Think you can stump me? Open an issue with your own bug and I'll try to solve it. 😉
+
+</details>
 
 ---
 
